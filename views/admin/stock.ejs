@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock</title>
+    <link rel="stylesheet" href="/css/admin-overview.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <ul>
+            <li><a href="overview">Dashboard Overview</a></li>
+            <li><a href="add-product">Add New Product</a></li>
+            <li><a href="product-list">List of Full Products</a></li>
+            <li><a href="stock">Stock</a></li>
+            <li><a href="logout" onclick="return confirmLogout();">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <header>
+            <h1>Stock Overview</h1>
+        </header>
+        <section>
+            <h2>Products Low on Stock</h2>
+    <ul>
+        <% if (lowStockProducts.length === 0) { %>
+            <li>No products are low on stock.</li>
+        <% } else { %>
+            <% lowStockProducts.forEach(product => { %>
+                <li><%= product.name %> - Only <%= product.stock %> left in stock</li>
+            <% }) %>
+        <% } %>
+    </ul>
+        </section>
+    </div>
+</body>
+<script>
+    function confirmLogout() {
+        return confirm("Are you sure you want to logout?");
+    }
+</script>
+</html>

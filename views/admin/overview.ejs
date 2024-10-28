@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard Overview</title>
+    <link rel="stylesheet" href="/css/admin-overview.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <ul>
+            <li><a href="overview">Dashboard Overview</a></li>
+            <li><a href="add-product">Add New Product</a></li>
+            <li><a href="product-list">List of Full Products</a></li>
+            <li><a href="stock">Stock</a></li>
+            <li><a href="logout" onclick="return confirmLogout();">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <header>
+            
+            <h1>Dashboard Overview</h1>
+        </header>
+        <section>
+            <div class="overview-cards">
+                <div class="card">
+                    <h3>Total Products</h3>
+                    <p><%= totalProducts %></p>
+                </div>
+                <div class="card">
+                    <h3>Total Orders</h3>
+                    <p><%= totalOrders %></p>
+                </div>
+                <div class="card">
+                    <h3>Low Stock Products</h3>
+                    <p><%= lowStock %></p>
+                </div>
+                <div class="card">
+                    <h3>Total Users</h3>
+                    <p><%= totalUsers %></p>
+                </div>
+            </div>
+
+            <div class="recent-activities">
+                <h2>Recent Activities</h2>
+                <ul>
+                    <% recentActivities.forEach(activity => { %>
+                        <li><%= activity %></li>
+                    <% }) %>
+                </ul>
+            </div>
+        </section>
+    </div>
+</body>
+<script>
+    function confirmLogout() {
+        return confirm("Are you sure you want to logout?");
+    }
+    </script>
+</html>
