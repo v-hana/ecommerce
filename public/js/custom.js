@@ -5,7 +5,7 @@
 		var el = document.querySelectorAll('.testimonial-slider');
 
 		if (el.length > 0) {
-			var slider = tns({
+			var slider = tns({ 
 				container: '.testimonial-slider',
 				items: 1,
 				axis: "horizontal",
