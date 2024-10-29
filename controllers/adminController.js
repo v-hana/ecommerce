@@ -4,23 +4,58 @@ const User = require('../models/user');   // Assuming you have a User model
 const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
+const bcrypt = require('bcrypt');
+const Admin = require('../models/user');
 
 // Controller to handle admin login
 exports.getLoginpage = (req, res, next) => {
   res.render('admin/login');
 };
-exports.postAdminLogin = (req, res) => {
+
+
+// Controller to handle admin login
+exports.postAdminLogin = async (req, res) => {
   const { username, password } = req.body;
 
-  // Sample check, replace with real authentication logic
-  if (username === 'admin' && password === 'admin123') {
+  try {
+    // Find the admin user by username
+    const adminUser = await Admin.findOne({ username });
+
+    // Check if user exists and verify password
+    if (adminUser && await bcrypt.compare(password, adminUser.password)) {
       req.session.isAuthenticated = true;
-      req.session.adminUser = username;
+      req.session.adminUser = adminUser.username; // store the username in session
       res.redirect('overview');
-  } else {
+    } else {
       res.status(401).send('Incorrect username or password');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
   }
 };
+
+// Method to add a new admin user (for initial setup)
+exports.addAdminUser = async (req, res) => {
+  const { username, password } = req.body;
+
+  // Hash the password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const newAdmin = new Admin({
+    username,
+    password: hashedPassword,
+  });
+
+  try {
+    await newAdmin.save();
+    res.status(201).send('Admin user created successfully.');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+};
+
 
 
 

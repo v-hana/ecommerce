@@ -4,9 +4,11 @@ const adminController = require('../controllers/adminController');
 const upload = adminController.upload;
 
 
-// Admin login route
-router.get('/login', (req, res) => res.render('admin/login'));
+// Route for handling admin login
 router.post('/login', adminController.postAdminLogin);
+
+// Route for adding a new admin user (for initial setup)
+router.post('/add-admin', adminController.addAdminUser);
 
 
 // Get Overview
