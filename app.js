@@ -41,6 +41,10 @@ mongoose.connect('mongodb://localhost:27017/yourDB', { useNewUrlParser: true, us
   
 app.use('/',clientRoutes)
 app.get('/products', clientRoutes)
+app.get('/home', clientRoutes)
+app.get('/aboutUs', clientRoutes)
+app.get('/service', clientRoutes)
+app.get('/blog',clientRoutes)
 app.use('/auth', authRoutes);
 app.use('/cart', cartRoutes);
 

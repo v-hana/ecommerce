@@ -10,10 +10,18 @@ const clientController = require('../controllers/clientController');
 // router.get('/add', productController.getAddProductForm);
 router.get('/products',clientController.productsView)
 
-//profile
-
-
 //home
+router.get('/home', clientController.getHomePage);
 
+//aboutUs
+router.get('/aboutUs', clientController.getAboutUsPage);
 
+//services
+router.get('/service',clientController.getServicePage)
+
+//blog
+router.get('/blog', clientController.getBlogPage);
+
+//contactUs
+router.get('/contact',clientController.getContactPage)
 module.exports = router;
