@@ -39,55 +39,41 @@
 		<div class="untree_co-section before-footer-section">
             <div class="container">
               <div class="row mb-5">
-                <form class="col-md-12" method="post">
+                <div class="col-md-12">
                   <div class="site-blocks-table">
                     <table class="table">
                       <thead>
                         <tr>
-                          <th class="product-thumbnail">Image</th>
-                          <th class="product-name">Product</th>
-                          <th class="product-price">Price</th>
-                          <th class="product-quantity">Quantity</th>
-                          <th class="product-total">Total</th>
-                          <th class="product-remove">Remove</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
                         </tr>
-                      </thead>
-                      <tbody>
-                        <% if (cartItems.length === 0) { %>
-                            <tr>
-                                <td colspan="6" class="text-center">Your cart is empty.</td>
-                            </tr>
-                        <% } else { %>
-                            <% cartItems.forEach(item => { %>
-                                <tr>
-                                    <td class="product-thumbnail">
-                                        <img src="/uploads/<%= item.image %>" alt="Image" class="img-fluid">
-                                    </td>
-                                    <td class="product-name">
-                                        <h2 class="h5 text-black"><%= item.name %></h2>
-                                    </td>
-                                    <td><%= item.price %></td>
-                                    <td>
-                                        <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
-                                            <div class="input-group-prepend">
-                                                <button class="btn btn-outline-black decrease" type="button">&minus;</button>
-                                            </div>
-                                            <input type="text" class="form-control text-center quantity-amount" value="<%= item.quantity %>" aria-label="Quantity">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-outline-black increase" type="button">&plus;</button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>$<%= item.totalPrice %></td>
-                                    <td><a href="#" class="btn btn-black btn-sm">X</a></td>
-                                </tr>
-                            <% }) %>
-                        <% } %>
-                    </tbody>
+                    </thead>
+                    <tbody>
+                      <% if (cartItems.length === 0) { %>
+                          <tr>
+                              <td colspan="4" class="text-center">Your cart is empty.</td>
+                          </tr>
+                      <% } else { %>
+                          <% cartItems.forEach(item => { %>
+                              <tr>
+                                  <td><%= item.productId.name %></td>
+                                  <td>
+                                      <button class="btn btn-sm btn-outline-secondary change-quantity" data-id="<%= item.productId._id %>" data-action="decrement">-</button>
+                                      <span id="quantity-<%= item.productId._id %>"><%= item.quantity %></span>
+                                      <button class="btn btn-sm btn-outline-secondary change-quantity" data-id="<%= item.productId._id %>" data-action="increment">+</button>
+                                  </td>
+                                  <td>$<%= item.productId.price %></td>
+                                  <td>$<%= item.quantity * item.productId.price %></td>
+                              </tr>
+                          <% }) %>
+                      <% } %>
+                  </tbody>
                     
                     </table>
                   </div>
-                </form>
+                </div>
               </div>
         
               <div class="row">
@@ -126,15 +112,16 @@
                           <span class="text-black">Subtotal</span>
                         </div>
                         <div class="col-md-6 text-right">
-                          <strong class="text-black">$230.00</strong>
+                          <strong class="text-black">$<%= cartItems.reduce((total, item) => total + (item.price * item.quantity), 0) %></strong>
                         </div>
                       </div>
                       <div class="row mb-5">
                         <div class="col-md-6">
                           <span class="text-black">Total</span>
                         </div>
+        
                         <div class="col-md-6 text-right">
-                          <strong class="text-black">$230.00</strong>
+                          <strong class="text-black">$<%= cartItems.reduce((total, item) => total + (item.price * item.quantity), 0) %></strong>
                         </div>
                       </div>
         
@@ -161,6 +148,32 @@
 		<script src="js/bootstrap.bundle.min.js"></script>
 		<script src="js/tiny-slider.js"></script>
 		<script src="js/custom.js"></script>
+    <script>
+      document.querySelectorAll('.change-quantity').forEach(button => {
+          button.addEventListener('click', async (event) => {
+              const productId = event.target.getAttribute('data-id');
+              const action = event.target.getAttribute('data-action');
+              console.log(action);
+              
+              // Send a PATCH request to update the quantity in the cart
+              const response = await fetch(`/cart/update-quantity`, {
+                  method: 'PATCH',  // Changed to PATCH
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ productId, action })
+              });
+              const data = await response.json();
+  
+              if (data.success) {
+                  // Update the quantity displayed in the UI
+                  const quantityElement = document.getElementById(`quantity-${productId}`);
+                  quantityElement.textContent = data.newQuantity;
+              } else {
+                  alert(data.message);
+              }
+          });
+      });
+  </script>
+  
 	</body>
 
 </html>

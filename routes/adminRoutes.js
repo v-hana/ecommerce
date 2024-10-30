@@ -3,7 +3,7 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 const upload = adminController.upload;
 
-
+router.get('/login',adminController.getLoginpage)
 // Route for handling admin login
 router.post('/login', adminController.postAdminLogin);
 

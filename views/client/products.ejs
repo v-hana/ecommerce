@@ -43,7 +43,7 @@
 
 							<span class="icon-cross">
 								
-									<button class="cart-button" onclick="addToCart('<%= product.id %>')">Add to Cart</button>
+									<button class="cart-button" data-id="<%= product._id %>" onclick="addToCart()">Add to Cart</button>
 								
 								
 							</span>
@@ -68,31 +68,29 @@
 		<script src="js/tiny-slider.js"></script>
 		<script src="js/custom.js"></script>
 	
-<script>
-	// Initialize cart count
-	let cartCount = 0;
+		<script>
+			document.querySelectorAll('.cart-button').forEach(button => {
+					button.addEventListener('click', async (event) => {
+							const productId = event.target.getAttribute('data-id');
+							const response = await fetch('/cart/add-to-cart', {
+									method: 'POST',
+									headers: { 'Content-Type': 'application/json' },
+									body: JSON.stringify({ productId })
+							});
+							const data = await response.json();
+							alert(data.message);
+					});
+			});
+	</script>
+	<script>
+    // Initialize cart count
+    let cartCount = 0;
 
-	function addToCart(productId) {
-			cartCount++;
-			document.getElementById("cartCount").innerText = cartCount;
-			
-			fetch('/add-to-cart', {
-					method: 'POST',
-					headers: {
-							'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({ productId: productId }) 
-			})
-			.then(response => response.json())
-			.then(data => {
-					console.log(data.message); 
-					// Optionally update the cart display or show a success message
-			})
-			.catch(error => console.error('Error:', error));
-	}
-</script>
-
-		
+    function addToCart() {
+      cartCount++;
+      document.getElementById("cartCount").innerText = cartCount;
+    }
+  </script>
 	</body>
 
 </html>

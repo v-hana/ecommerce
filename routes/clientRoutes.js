@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const clientController = require('../controllers/clientController');
 
+
 //product
 // router.get('/', productController.getAllProducts);
 // router.post('/add', productController.addProduct);
@@ -13,12 +14,6 @@ router.get('/products',clientController.productsView)
 
 
 //home
-
-//cart
-router.post('/add-to-cart', clientController.addToCart);
-router.get('/cart', clientController.getCart);
-router.post('/remove-from-cart', clientController.removeFromCart);
-
 
 
 module.exports = router;

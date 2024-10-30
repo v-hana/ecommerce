@@ -5,7 +5,7 @@ const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const Admin = require('../models/user');
+const Admin = require('../models/adminModel');
 
 // Controller to handle admin login
 exports.getLoginpage = (req, res, next) => {
@@ -21,10 +21,10 @@ exports.postAdminLogin = async (req, res) => {
     // Find the admin user by username
     const adminUser = await Admin.findOne({ username });
 
-    // Check if user exists and verify password
+    // Verify user exists and password is correct
     if (adminUser && await bcrypt.compare(password, adminUser.password)) {
       req.session.isAuthenticated = true;
-      req.session.adminUser = adminUser.username; // store the username in session
+      req.session.adminUser = adminUser.username; // store username in session
       res.redirect('overview');
     } else {
       res.status(401).send('Incorrect username or password');
@@ -34,7 +34,6 @@ exports.postAdminLogin = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
-
 // Method to add a new admin user (for initial setup)
 exports.addAdminUser = async (req, res) => {
   const { username, password } = req.body;
