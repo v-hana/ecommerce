@@ -40,7 +40,7 @@ exports.postLogin = async (req, res) => {
         }
 
         req.session.userId = user._id; // Store user ID in session
-        res.redirect('/products');
+        res.redirect('/home');
     } catch (err) {
         res.render('client/login', { error: 'Error logging in, please try again.' });
     }
