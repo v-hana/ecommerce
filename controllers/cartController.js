@@ -1,5 +1,6 @@
 const Cart = require('../models/cart');
 const Product = require('../models/product');
+const Coupon=require('../models/coupon')
 
 exports.addToCart = async (req, res) => {
   const { productId } = req.body;
@@ -87,3 +88,35 @@ exports.updateQuantity = async (req, res) => {
   }
 };
 
+
+exports.applyCoupon = async (req, res) => {
+  const { couponCode } = req.body;
+  const userId = req.session.userId;
+
+  try {
+      const coupon = await Coupon.findOne({
+          code: couponCode,
+          isActive: true,
+          expirationDate: { $gte: new Date() }
+      });
+
+      if (!coupon) {
+          return res.status(404).json({ success: false, message: 'Invalid or expired coupon.' });
+      }
+
+      // Calculate the discount and new total based on the cart items
+      const cart = await Cart.findOne({ userId }).populate('items.productId');
+      const subtotal = cart.items.reduce((total, item) => total + item.productId.price * item.quantity, 0);
+      const discountAmount = (subtotal * coupon.discount) / 100; // assuming discount is a percentage
+      const totalAfterDiscount = subtotal - discountAmount;
+      req.session.discount = discountAmount;
+      res.status(200).json({
+          success: true,
+          discount: discountAmount.toFixed(2), // format discount to 2 decimal places
+          newTotal: totalAfterDiscount.toFixed(2) // format new total to 2 decimal places
+      });
+  } catch (err) {
+      console.error('Error applying coupon:', err);
+      res.status(500).json({ success: false, message: 'Error applying coupon.' });
+  }
+};

@@ -5,7 +5,8 @@ exports.getCheckout = async (req, res) => {
   const userId = req.session.userId;
   const cart = await Cart.findOne({ userId }).populate('items.productId');
   const cartItems = cart ? cart.items : [];
-  const totalAmount = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const discount = req.session.discount || 0;
+  const totalAmount = cartItems.reduce((total, item) => total + item.price * item.quantity, 0) - discount;
   
   res.render('client/checkout', { cartItems, totalAmount });
 };
@@ -16,9 +17,10 @@ exports.placeOrder = async (req, res) => {
   const cart = await Cart.findOne({ userId }).populate('items.productId');
   
   if (!cart) return res.status(400).json({ message: 'No items in cart.' });
+  const discount = req.session.discount || 0; 
+  const totalAmount = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0) - discount;
 
-  const totalAmount = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
+  
   const newOrder = new Order({
     userId,
     items: cart.items.map(item => ({
@@ -33,7 +35,8 @@ exports.placeOrder = async (req, res) => {
   });
 
   await newOrder.save();
-  await Cart.findOneAndDelete({ userId });  // Clear cart after order
+  await Cart.findOneAndDelete({ userId });
+  req.session.discount = 0;
   res.redirect('/order-confirmation');
 };
 

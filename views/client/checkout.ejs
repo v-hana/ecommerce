@@ -21,7 +21,8 @@
           <li><%= item.name %> (x<%= item.quantity %>): $<%= item.price * item.quantity %></li>
         <% }) %>
       </ul>
-      <p>Total: $<%= totalAmount %></p>
+      <p>Total: $<%= totalAmount.toFixed(2) %></p>
+    
       <button type="submit" class="btn btn-primary">Place Order</button>
     </form>
   </div>
