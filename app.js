@@ -11,6 +11,7 @@ const clientRoutes = require('./routes/clientRoutes')
 const checkoutRoutes = require('./routes/checkoutRoute');
 
 
+
 const dotenv = require("dotenv");
 dotenv.config();
 const path = require("path");
@@ -51,7 +52,7 @@ app.get('/blog',clientRoutes)
 app.use('/auth', authRoutes);
 app.use('/cart', cartRoutes);
 app.use('/', checkoutRoutes);
-
+app.use('/checkout', checkoutRoutes);
 
 
 app.use("/admin", adminRoutes)
