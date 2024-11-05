@@ -15,7 +15,8 @@ const orderSchema = new mongoose.Schema({
     address: String,
     city: String,
     postalCode: String,
-    country: String
+    country: String,
+    contact:String
   },
   paymentStatus: { type: String, enum: ['Pending', 'Paid'], default: 'Pending' },
   orderDate: { type: Date, default: Date.now }

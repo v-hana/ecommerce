@@ -9,7 +9,7 @@
   <h2>Complete Your Payment</h2>
   <script>
     const options = {
-      key: 'YOUR_RAZORPAY_KEY_ID',
+      key: 'rzp_test_RJf3MNDoHKza5M',
       amount: '<%= amount %>',
       currency: '<%= currency %>',
       name: 'Your Company Name',
@@ -17,7 +17,7 @@
       order_id: '<%= orderId %>',
       handler: function (response) {
         alert('Payment successful! Payment ID: ' + response.razorpay_payment_id);
-        window.location.href = '/checkout/success';
+        window.location.href = '/order-confirmation';
       },
       prefill: {
         name: 'Customer Name',
@@ -29,5 +29,15 @@
     const rzp = new Razorpay(options);
     rzp.open();
   </script>
+
+<footer class="footer-section">
+  <%- include('layout/footer') %>
+</footer>
+<!-- End Footer Section -->	
+
+
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/tiny-slider.js"></script>
+<script src="js/custom.js"></script>
 </body>
 </html>

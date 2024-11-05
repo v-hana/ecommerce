@@ -23,16 +23,27 @@
             <h1>Stock Overview</h1>
         </header>
         <section>
-            <h2>Products Low on Stock</h2>
-    <ul>
-        <% if (lowStockProducts.length === 0) { %>
-            <li>No products are low on stock.</li>
-        <% } else { %>
-            <% lowStockProducts.forEach(product => { %>
-                <li><%= product.name %> - Only <%= product.stock %> left in stock</li>
-            <% }) %>
-        <% } %>
-    </ul>
+            <h2>Low Stock Products</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% lowStockProducts.forEach(product => { %>
+                        <tr>
+                            <td><%= product.name %></td>
+                            <td><%= product.price %></td>
+                            <td><%= product.stock %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+
+  
         </section>
     </div>
 </body>

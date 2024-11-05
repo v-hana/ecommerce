@@ -14,6 +14,7 @@
       <input type="text" name="city" placeholder="City" required>
       <input type="text" name="postalCode" placeholder="Postal Code" required>
       <input type="text" name="country" placeholder="Country" required>
+      <input type="text" name="contact" placeholder="Contact Number" required>
       
       <h4>Order Summary</h4>
       <ul>
@@ -24,7 +25,7 @@
       <p>Total: $<%= totalAmount.toFixed(2) %></p>
       
 
-      <h3>Payment Method</h3>
+      <h4>Payment Method</h4>
       <div class="form-group">
         <input type="radio" id="cod" name="paymentMethod" value="COD" required>
         <label for="cod">Cash on Delivery</label>
@@ -34,11 +35,19 @@
         <input type="radio" id="razorpay" name="paymentMethod" value="Razorpay" required>
         <label for="razorpay">Razorpay</label>
       </div>
-      
+
       <button type="submit" class="btn btn-primary">Place Order</button>
     </form>
   </div>
 
-  <%- include('layout/footer') %>
+  <footer class="footer-section">
+    <%- include('layout/footer') %>
+  </footer>
+  <!-- End Footer Section -->	
+
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/tiny-slider.js"></script>
+  <script src="js/custom.js"></script>
 </body>
 </html>
