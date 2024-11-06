@@ -23,5 +23,7 @@ router.get('/service',clientController.getServicePage)
 router.get('/blog', clientController.getBlogPage);
 
 //contactUs
-router.get('/contact',clientController.getContactPage)
+router.get('/contact', clientController.getContactPage)
+
+router.get('/products/:id', clientController.getProductDetail);
 module.exports = router;

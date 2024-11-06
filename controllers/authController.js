@@ -26,6 +26,7 @@ exports.getLogin = (req, res) => {
 };
 
 exports.postLogin = async (req, res) => {
+    
     const { email, password } = req.body;
 
     try {

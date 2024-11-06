@@ -7,6 +7,7 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const Admin = require('../models/adminModel');
 
+
 // Controller to handle admin login
 exports.getLoginpage = (req, res, next) => {
   res.render('admin/login');
@@ -86,7 +87,7 @@ exports.getOverview = async (req, res) => {
 
 // Add New Product
 exports.getAddProduct = (req, res, next) => {
-  res.render('admin/add-product');
+  res.render('admin/add-product',{ errors: {}, name: '', price: '', stock: '', description: '' });
 };
 
 
@@ -114,7 +115,17 @@ exports.upload = upload.single('image');
 exports.addProduct = async (req, res, next) => {
   const { name, price, stock, description } = req.body;
   const image = req.file ? req.file.filename : null;
+  let errors = {};
 
+    if (!name) errors.name = 'Product name is required';
+    if (!price) errors.price = 'Price is required';
+    if (!stock) errors.stock = 'Stock quantity is required';
+    if (!description) errors.description = 'Description is required';
+    if (!image) errors.image = 'Product image is required';
+
+  if (Object.keys(errors).length > 0) {
+    return res.render('admin/add-product', { errors, name, price, stock, description });
+  }
   const newProduct = new Product({
       name,
       price,
@@ -122,7 +133,7 @@ exports.addProduct = async (req, res, next) => {
       description,
       image // Save the image filename to the product document
   });
-
+ 
   try {
       await newProduct.save();
       res.redirect('/admin/product-list'); // Redirect to product list after adding
@@ -212,5 +223,3 @@ exports.getStock = async (req, res, next) => {
         res.status(500).send('Server error');
     }
 };
-
-

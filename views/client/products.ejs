@@ -36,17 +36,22 @@
 		      		<!-- Start Column 1 -->
 							<% products.forEach((product, index) => { %>
 					<div class="col-12 col-md-4 col-lg-3 mb-5">
-						<a class="product-item" href="#">
-							<img src="/uploads/<%= product.image %>" class="img-fluid product-thumbnail">
+						<a class="product-item" href="">
+							<a href="/products/<%= product._id %>"><img src="/uploads/<%= product.image %>" class="img-fluid product-thumbnail"></a>
+							<div class="price-cart">
 							<h3 class="product-title"><%= product.name %></h3>
+							
 							<strong class="product-price">$ <%=product.price%>.00</strong>
 
 							<span class="icon-cross">
-								
+								<% if (product.stock > 0) { %>
 									<button class="cart-button" data-id="<%= product._id %>" onclick="addToCart()">Add to Cart</button>
-								
-								
-							</span>
+									<% } else { %>
+										<button class="cart-button" disabled>Out of Stock</button>
+									<% } %>
+					
+								</span>
+						</div>
 						</a>
 					</div> 
 					<!-- End Column 1 -->

@@ -155,3 +155,19 @@ th {
   background-color: #2196F3; /* Blue */
   color: white;
 }
+
+.addinlist{
+  display: flex;
+  justify-content: space-between;
+}
+.addinlist button{
+  padding: 10px 15px 10px 15px;
+  background-color: #2196F3; 
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.addinlist button:hover{
+  background-color: #45a049;
+}
