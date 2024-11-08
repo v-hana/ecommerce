@@ -57,6 +57,7 @@ app.use('/checkout', checkoutRoutes);
 
 app.use("/admin", adminRoutes)
 app.get("/overview", adminRoutes);
+app.get("/userOverview",adminRoutes)
 app.get("/login", adminRoutes)
 app.get("/add-product", adminRoutes)
 app.get("/product-list", adminRoutes)

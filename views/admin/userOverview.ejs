@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard Overview</title>
+    <link rel="stylesheet" href="/css/admin-overview.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <ul>
+            <li><a href="overview">Dashboard Overview</a></li>
+            <li><a href="add-product">Add New Product</a></li>
+            <li><a href="product-list">List of Full Products</a></li>
+            <li><a href="stock">Stock</a></li>
+            <li><a href="logout" onclick="return confirmLogout();">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <header>
+            <h1>Dashboard Overview</h1>
+        </header>
+        <section>
+            <!-- Overview cards and other dashboard content -->
+
+            <div class="user-overview">
+                <h2>User Overview</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(user => { %>
+                            <tr>
+                                <td><%= user._id %></td>
+                                <td><%= user.username %></td>
+                                <td><%= user.email %></td>
+                                <td>
+                                    <button onclick="viewOrders('<%= user._id %>')">View Orders</button>
+                                    <button onclick="blockUser('<%= user._id %>')">
+                                        <%= user.isBlocked ? "Unblock" : "Block" %>
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Function to confirm logout
+        function confirmLogout() {
+            return confirm("Are you sure you want to logout?");
+        }
+
+        // View Orders of a User
+       // View Orders of a User
+function viewOrders(userId) {
+    window.location.href = `/admin/user/${userId}/orders`; // Redirect to the orders page
+}
+
+
+        // Block/Unblock a User
+        async function blockUser(userId) {
+            const response = await fetch(`/admin/user/${userId}/block`, {
+                method: 'POST',
+            });
+            const result = await response.json();
+            alert(result.message);
+            location.reload(); // Reload the page to update the UI
+        }
+    </script>
+</body>
+</html>

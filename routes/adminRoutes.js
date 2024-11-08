@@ -28,6 +28,21 @@ router.post('/delete-product/:id', adminController.postDeleteProduct);
 // Product List
 router.get('/product-list', adminController.getProductList);
 
+router.get('/userOverview',adminController.getUserOverview)
+
+// Route to view orders for a specific user
+router.get('/user/:id/orders', adminController.getUserOrders);
+
+// View Order Details
+router.get('/orders/:id', adminController.getOrderDetails);
+
+// Update Order Status
+router.post('/order/:id/status', adminController.updateOrderStatus);
+
+
+// Route to block/unblock a user
+router.post('/user/:id/block', adminController.toggleBlockUser);
+
 // Stock
 router.get('/stock', adminController.getStock);
 

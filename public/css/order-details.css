@@ -1,0 +1,125 @@
+/* admin-orders.css */
+
+/* Reset some default styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* General layout */
+body {
+    display: flex;
+    background-color: #f4f4f9;
+}
+
+/* Sidebar styling */
+.sidebar {
+    width: 250px;
+    background-color: #333;
+    color: white;
+    
+    padding-top: 20px;
+  }
+  
+  .sidebar h2 {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    margin: 20px 0;
+  }
+  
+  .sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+    transition: background 0.3s;
+  }
+  
+  .sidebar ul li a:hover {
+    background-color: #575757;
+  }
+/* Content area styling */
+.content {
+    flex: 1;
+    padding: 30px;
+}
+
+header h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Order details section styling */
+section h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+section p {
+    font-size: 1.1em;
+    margin: 10px 0;
+}
+
+strong {
+    color: #333;
+}
+
+/* Form styling */
+form {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+select {
+    padding: 8px;
+    font-size: 1em;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+button {
+    padding: 10px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+/* Logout confirmation */
+.sidebar ul li a[onclick] {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.sidebar ul li a[onclick]:hover {
+    color: #c0392b;
+}

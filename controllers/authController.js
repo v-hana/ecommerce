@@ -8,7 +8,17 @@ exports.getSignup = (req, res) => {
 exports.postSignup = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.render('client/signup', { error: errors.array()[0].msg });
+        const errorMessages = {};
+        errors.array().forEach(error => {
+            console.log(error, 'err');
+            
+            errorMessages[error.path] = error.msg;
+        });
+        console.log(errors, 'helo');
+        
+        console.log(errorMessages, 'err message');
+        
+        return res.render('client/signup', { error: errorMessages });
     }
 
     try {
@@ -22,22 +32,38 @@ exports.postSignup = async (req, res) => {
 };
 
 exports.getLogin = (req, res) => {
-    res.render('client/login', { error: null });
+    res.render('client/login', { errorMessages: {}  });
 };
 
 exports.postLogin = async (req, res) => {
-    
+    const errors = validationResult(req);
+    const errorMessages = {};
+
+    // Handle validation errors from express-validator
+    if (!errors.isEmpty()) {
+       
+        errors.array().forEach(error => {
+            errorMessages[error.path] = error.msg; // Use 'param' to get the input field name
+        });
+        return res.render('client/login', { errorMessages });
+    }
     const { email, password } = req.body;
 
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.render('client/login', { error: 'Invalid email or password.' });
+            errorMessages.email = 'Invalid email or password.'; // Add error message for email field
+            return res.render('client/login', { errorMessages });
+            
         }
-
+        if (user.isBlocked) {
+            return res.status(403).json({ message: 'Your account has been blocked. Contact support for assistance.' });
+          }
+      
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            return res.render('client/login', { error: 'Invalid email or password.' });
+            errorMessages.password = 'Invalid email or password.'; // Add error message for password field
+            return res.render('client/login', { errorMessages });
         }
 
         req.session.userId = user._id; // Store user ID in session
@@ -55,3 +81,4 @@ exports.logout = (req, res) => {
         res.redirect('/auth/login');
     });
 };
+

@@ -1,0 +1,71 @@
+
+<!-- User Orders Page (updated) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Orders</title>
+    <link rel="stylesheet" href="/css/admin-orders.css">
+</head>
+<body>
+ 
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <ul>
+            <li><a href="/admin/overview">Dashboard Overview</a></li>
+            <li><a href="/admin/add-product">Add New Product</a></li>
+            <li><a href="/admin/product-list">List of Full Products</a></li>
+            <li><a href="/admin/stock">Stock</a></li>
+            <li><a href="/admin/logout" onclick="return confirmLogout();">Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <header>
+            <h1>User Orders</h1>
+        </header>
+        <section>
+            <h2>Orders for User ID: <%= orders[0] ? orders[0].userId : 'N/A' %></h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                       
+                        <th>Status</th>
+                        <th>Total Price</th>
+                        <th>Order Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (orders.length > 0) { %>
+                        <% orders.forEach(order => { %>
+                          
+
+                            <tr>
+                                <!-- Order ID as a link to view full order details -->
+                                <td><a href="/admin/orders/<%= order._id %>"><%= order._id %></a></td>
+                                <td><%= order.status %></td>
+                                <td>$ <%= order.totalAmount %>.00</td>
+                                <td><%= order.orderDate.toISOString().split('T')[0] %></td>
+                            </tr>
+                            
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="6">No orders found for this user.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </section>
+    </div>
+  
+
+    <script>
+        function confirmLogout() {
+            return confirm("Are you sure you want to logout?");
+        }
+    </script>
+</body>
+</html>

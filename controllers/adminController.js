@@ -223,3 +223,84 @@ exports.getStock = async (req, res, next) => {
         res.status(500).send('Server error');
     }
 };
+
+exports.getUserOverview = async (req, res) => {
+  try {
+    // Fetch all users from the database
+    const users = await User.find();
+
+    // Render the userOverview view with the list of users
+    res.render('admin/userOverview', { users });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+}
+
+exports.getUserOrders = async (req, res) => {
+  const userId = req.params.id;
+  try {
+      
+    const orders = await Order.find({ userId });
+    console.log(orders)
+    res.render('admin/user-orders', { orders });
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching orders' });
+  }
+};
+
+// Toggle block/unblock status for a user
+exports.toggleBlockUser = async (req, res) => {
+  try {
+      const userId = req.params.id;
+      const user = await User.findById(userId);
+      if (user) {
+          user.isBlocked = !user.isBlocked;
+        await user.save();
+        const action = user.isBlocked ? 'blocked' : 'unblocked';
+        res.json({ message: `User ${action} successfully.` });
+      } else {
+          res.status(404).json({ message: 'User not found' });
+      }
+  } catch (error) {
+      res.status(500).json({ message: 'Error blocking/unblocking user' });
+  }
+};
+
+// Display a specific order's details
+exports.getOrderDetails = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).send('Order not found');
+    }
+
+    res.render('admin/order-details', { order });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+};
+
+// Update order status
+exports.updateOrderStatus = async (req, res) => {
+  const orderId = req.params.id;
+  const { status } = req.body;
+console.log(status);
+
+  try {
+      const order = await Order.findById(orderId);
+      if (order) {
+          order.status = status;
+          await order.save();
+        res.json({ success: true, message: 'Order status updated successfully.' });
+       
+      } else {
+          res.status(404).json({ success: false, message: 'Order not found.' });
+      }
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Error updating order status.' });
+  }
+};
+

@@ -11,7 +11,10 @@ router.post('/signup', [
 ], authController.postSignup);
 
 router.get('/login', authController.getLogin);
-router.post('/login', authController.postLogin);
+router.post('/login', [
+    check('email').notEmpty().withMessage('Email is required'),
+    check('password').notEmpty().withMessage('Password is required')
+], authController.postLogin);
 router.get('/logout', authController.logout);
 
 module.exports = router;

@@ -19,6 +19,11 @@ const orderSchema = new mongoose.Schema({
     contact:String
   },
   paymentStatus: { type: String, enum: ['Pending', 'Paid'], default: 'Pending' },
+  status: { 
+    type: String, 
+    enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'], 
+    default: 'Pending' 
+  },
   orderDate: { type: Date, default: Date.now }
 });
 

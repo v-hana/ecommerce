@@ -3,7 +3,6 @@
   padding: 0;
   box-sizing: border-box;
 }
-
 body {
   font-family: Arial, sans-serif;
   display: flex;
@@ -170,4 +169,17 @@ th {
 }
 .addinlist button:hover{
   background-color: #45a049;
+}
+
+.user-overview button{
+  background-color: rgb(69, 64, 64);
+  color: white;
+  border: none;
+  padding: 5px 10px 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.user-overview th{
+  background-color: #007bff;
+  color: white;
 }

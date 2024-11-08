@@ -10,20 +10,34 @@
     <div class="login-container">
         <div class="login-box">
             <h2>Login</h2>
-            <% if (error) { %>
+            <% if (errorMessages && errorMessages.general) { %>
                 <div class="error-message" style="color: red;">
-                    <%= error %>
+                    <%= errorMessages.general %>
                 </div>
             <% } %>
-            
             <form action="/auth/login" method="POST">
                 <div class="input-box">
-                    <input type="email" name="email" required />
                     <label>Email</label>
+                    <input type="email" name="email"  />
+                   
+                    <% if (errorMessages && errorMessages.email) { %>
+                        <div class="error-message" style="color: red;">
+                            <%= errorMessages.email %>
+                        </div>
+                    <% } %>         
                 </div>
                 <div class="input-box">
-                    <input type="password" name="password" required />
                     <label>Password</label>
+                    <input type="password" name="password"  />
+                    
+                    <% if (errorMessages && errorMessages.password) { %>
+                        <div class="error-message" style="color: red;">
+                            <%= errorMessages.password %>
+                        </div>
+                    <% } %>  
+
+                    
+
                 </div>
                 <button type="submit" class="login-btn">Login</button>
                 <p class="signup-text">
