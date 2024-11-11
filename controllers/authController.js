@@ -65,8 +65,7 @@ exports.postLogin = async (req, res) => {
             errorMessages.password = 'Invalid email or password.'; // Add error message for password field
             return res.render('client/login', { errorMessages });
         }
-        req.session.user = user; // Store user in session
-        req.user = user; // Store user ID in session
+        req.session.userId = user._id; // Store user ID in session
         res.redirect('/home');
     } catch (err) {
         res.render('client/login', { error: 'Error logging in, please try again.' });

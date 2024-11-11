@@ -20,15 +20,15 @@ router.get('/aboutUs', clientController.getAboutUsPage);
 router.get('/service',clientController.getServicePage)
 
 //blog
-router.get('/blog', clientController.getBlogPage);
+router.get('/blog',clientController.getBlogPage);
 
 //contactUs
-router.get('/contact', clientController.getContactPage)
+router.get('/contact',clientController.getContactPage)
 
 router.get('/products/:id', clientController.getProductDetail);
 
 // Profile route
-router.get('/profile', isAuthenticated,clientController.getProfile);
+router.get('/profile',isAuthenticated,clientController.getProfile);
 
 // Orders route
 router.get('/orders', isAuthenticated,clientController.getOrders)

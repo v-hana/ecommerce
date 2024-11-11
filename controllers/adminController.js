@@ -26,7 +26,7 @@ exports.postAdminLogin = async (req, res) => {
     if (adminUser && await bcrypt.compare(password, adminUser.password)) {
       req.session.isAuthenticated = true;
       req.session.adminUser = adminUser.username; // store username in session
-      res.redirect('overview');
+      res.redirect('/admin/overview');
     } else {
       res.status(401).send('Incorrect username or password');
     }
@@ -304,3 +304,13 @@ console.log(status);
   }
 };
 
+exports.getOrderManagement = async (req, res) => {
+  try {
+      // Fetch all orders and sort them by date (latest first)
+      const orders = await Order.find().sort({ orderDate: -1 }); // Sort by 'orderDate' descending
+      res.render('admin/order-management', { orders });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Server error');
+  }
+};

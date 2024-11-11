@@ -183,3 +183,24 @@ th {
   background-color: #007bff;
   color: white;
 }
+
+/* admin-overview.css or order-management.css */
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.order-table th, .order-table td {
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.order-table th {
+  background-color: #f4f4f4;
+}
+
+.order-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
