@@ -31,18 +31,28 @@ app.set('view engine', 'ejs');
 app.use(session({
     secret: 'your-secret-key',
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store: new MongoStore({
         mongoUrl: 'mongodb://localhost:27017/yourDB', 
         
     }),
     cookie: { maxAge: 180 * 60 * 1000 } // 3 hours
 }))
+
+app.use((req, res, next) => {
+    if (req.session.user) {
+        req.user = req.session.user; // Populate req.user
+    }
+    next();
+})
+
 // Database connection
 mongoose.connect('mongodb://localhost:27017/yourDB', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err));
   
+
+
 app.use('/',clientRoutes)
 app.get('/products', clientRoutes)
 app.get('/home', clientRoutes)

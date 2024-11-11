@@ -50,7 +50,7 @@ exports.postLogin = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: req.body.email });
         if (!user) {
             errorMessages.email = 'Invalid email or password.'; // Add error message for email field
             return res.render('client/login', { errorMessages });
@@ -60,13 +60,13 @@ exports.postLogin = async (req, res) => {
             return res.status(403).json({ message: 'Your account has been blocked. Contact support for assistance.' });
           }
       
-        const isMatch = await user.comparePassword(password);
+        const isMatch = await user.comparePassword(req.body.password);
         if (!isMatch) {
             errorMessages.password = 'Invalid email or password.'; // Add error message for password field
             return res.render('client/login', { errorMessages });
         }
-
-        req.session.userId = user._id; // Store user ID in session
+        req.session.user = user; // Store user in session
+        req.user = user; // Store user ID in session
         res.redirect('/home');
     } catch (err) {
         res.render('client/login', { error: 'Error logging in, please try again.' });

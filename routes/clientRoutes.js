@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const clientController = require('../controllers/clientController');
-
+const { isAuthenticated } = require('../middleware/auth');
 
 //product
 // router.get('/', productController.getAllProducts);
@@ -26,4 +26,11 @@ router.get('/blog', clientController.getBlogPage);
 router.get('/contact', clientController.getContactPage)
 
 router.get('/products/:id', clientController.getProductDetail);
+
+// Profile route
+router.get('/profile', isAuthenticated,clientController.getProfile);
+
+// Orders route
+router.get('/orders', isAuthenticated,clientController.getOrders)
+
 module.exports = router;

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/orders.css">
+    <title>Your Orders</title>
+</head>
+<body>
+    <h1>Your Orders</h1>
+    <table>
+      <thead>
+          <tr>
+              <th>Order ID</th>
+              <th>Status</th>
+              <th>Order Date</th>
+              <th>Total Amount</th>
+              <th>Items</th>
+          </tr>
+      </thead>
+      <tbody>
+    <% orders.forEach(order => { %>
+      <tr>
+        <td><%= order._id %></td>
+        <td><%= order.status %></td>
+        <td><%= order.orderDate.toDateString() %></td>
+        <td class="total-amount">$<%= order.totalAmount %></td>
+        <td>
+            <ul>
+                <% order.items.forEach(item => { %>
+                    <li style="display: flex; align-items: center;">
+                        
+                        <span style="margin-left: 10px;"><strong>Product:</strong> <%= item.name %></span>
+                        <span style="margin-left: 10px;"><strong>Quantity:</strong> <%= item.quantity %></span>
+                        <span style="margin-left: 10px;"><strong>Price:</strong> $<%= item.price %></span>
+                    </li>
+                <% }) %>
+            </ul>
+        </td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+</body>
+</html>
