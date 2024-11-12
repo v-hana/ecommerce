@@ -5,18 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard Overview</title>
     <link rel="stylesheet" href="/css/admin-overview.css">
+    
 </head>
 <body>
-    <div class="sidebar">
-        <h2>Admin Dashboard</h2>
-        <ul>
-            <li><a href="overview">Dashboard Overview</a></li>
-            <li><a href="add-product">Add New Product</a></li>
-            <li><a href="product-list">List of Full Products</a></li>
-            <li><a href="stock">Stock</a></li>
-            <li><a href="logout" onclick="return confirmLogout();">Logout</a></li>
-        </ul>
-    </div>
+    <%- include('layout/sidebar') %>
 
     <div class="content">
         <header>
@@ -30,6 +22,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>Sl No</th>
                             <th>User ID</th>
                             <th>Name</th>
                             <th>Email</th>
@@ -37,14 +30,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% users.forEach(user => { %>
+                        <% users.forEach((user,index) => { %>
                             <tr>
+                                <td><%= index + 1 %></td>
                                 <td><%= user._id %></td>
                                 <td><%= user.username %></td>
                                 <td><%= user.email %></td>
                                 <td>
                                     <button onclick="viewOrders('<%= user._id %>')">View Orders</button>
-                                    <button onclick="blockUser('<%= user._id %>')">
+                                    <button onclick="blockUser('<%= user._id %>')" >
                                         <%= user.isBlocked ? "Unblock" : "Block" %>
                                     </button>
                                 </td>
@@ -55,14 +49,10 @@
             </div>
         </section>
     </div>
-
+    <%- include('layout/logout') %>
     <script>
-        // Function to confirm logout
-        function confirmLogout() {
-            return confirm("Are you sure you want to logout?");
-        }
-
-        // View Orders of a User
+       
+        
        // View Orders of a User
 function viewOrders(userId) {
     window.location.href = `/admin/user/${userId}/orders`; // Redirect to the orders page
@@ -71,13 +61,39 @@ function viewOrders(userId) {
 
         // Block/Unblock a User
         async function blockUser(userId) {
-            const response = await fetch(`/admin/user/${userId}/block`, {
-                method: 'POST',
-            });
-            const result = await response.json();
-            alert(result.message);
-            location.reload(); // Reload the page to update the UI
-        }
+    // First, show a confirmation dialog
+    const confirmation = await Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to proceed with this action?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, proceed',
+        cancelButtonText: 'Cancel'
+    });
+
+    // If the user confirms, proceed with the block/unblock action
+    if (confirmation.isConfirmed) {
+        const response = await fetch(`/admin/user/${userId}/block`, {
+            method: 'POST',
+        });
+        const result = await response.json();
+
+        // Show the result in a SweetAlert
+        Swal.fire({
+            icon: result.message.includes('blocked') ? 'warning' : 'success',
+            title: result.message,
+            confirmButtonText: 'OK'
+        }).then(() => {
+            location.reload(); // Reload the page to update the UI after blocking/unblocking
+        });
+    }
+}
+
+
     </script>
+    
+   
 </body>
 </html>

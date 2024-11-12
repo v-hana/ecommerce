@@ -39,38 +39,40 @@ exports.postLogin = async (req, res) => {
     const errors = validationResult(req);
     const errorMessages = {};
 
-    // Handle validation errors from express-validator
     if (!errors.isEmpty()) {
-       
         errors.array().forEach(error => {
-            errorMessages[error.path] = error.msg; // Use 'param' to get the input field name
+            errorMessages[error.path] = error.msg;
         });
-        return res.render('client/login', { errorMessages });
+        return res.render('client/login', { errorMessages, blockMessage: null });
     }
+
     const { email, password } = req.body;
 
     try {
-        const user = await User.findOne({ email: req.body.email });
+        const user = await User.findOne({ email });
         if (!user) {
-            errorMessages.email = 'Invalid email or password.'; // Add error message for email field
-            return res.render('client/login', { errorMessages });
-            
+            errorMessages.email = 'Invalid email or password.';
+            return res.render('client/login', { errorMessages, blockMessage: null });
         }
+
         if (user.isBlocked) {
-            return res.status(403).json({ message: 'Your account has been blocked. Contact support for assistance.' });
-          }
-      
-        const isMatch = await user.comparePassword(req.body.password);
-        if (!isMatch) {
-            errorMessages.password = 'Invalid email or password.'; // Add error message for password field
-            return res.render('client/login', { errorMessages });
+            // Set the blockMessage if the user is blocked
+            return res.render('client/login', { errorMessages: {}, blockMessage: 'Your account has been blocked. Contact support for assistance.' });
         }
-        req.session.userId = user._id; // Store user ID in session
+
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            errorMessages.password = 'Invalid email or password.';
+            return res.render('client/login', { errorMessages, blockMessage: null });
+        }
+
+        req.session.userId = user._id;
         res.redirect('/home');
     } catch (err) {
-        res.render('client/login', { error: 'Error logging in, please try again.' });
+        res.render('client/login', { errorMessages: {}, blockMessage: null, error: 'Error logging in, please try again.' });
     }
 };
+
 
 exports.logout = (req, res) => {
     req.session.destroy(err => {

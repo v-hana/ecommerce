@@ -1,4 +1,3 @@
-// middleware/authMiddleware.js
 
 const isAuthenticated = (req, res, next) => {
   // Check if the session contains isAuthenticated flag

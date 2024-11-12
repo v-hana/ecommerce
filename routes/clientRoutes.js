@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const clientController = require('../controllers/clientController');
-const { isAuthenticated } = require('../middleware/auth');
+const { isAuthenticated } = require ('../middleware/block')
 
 //product
 // router.get('/', productController.getAllProducts);

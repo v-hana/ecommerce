@@ -13,19 +13,14 @@ exports.getLoginpage = (req, res, next) => {
   res.render('admin/login');
 };
 
-
-// Controller to handle admin login
 exports.postAdminLogin = async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Find the admin user by username
     const adminUser = await Admin.findOne({ username });
-
-    // Verify user exists and password is correct
     if (adminUser && await bcrypt.compare(password, adminUser.password)) {
       req.session.isAuthenticated = true;
-      req.session.adminUser = adminUser.username; // store username in session
+      req.session.adminUser = adminUser.username; 
       res.redirect('/admin/overview');
     } else {
       res.status(401).send('Incorrect username or password');
@@ -35,11 +30,10 @@ exports.postAdminLogin = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
-// Method to add a new admin user (for initial setup)
+
 exports.addAdminUser = async (req, res) => {
   const { username, password } = req.body;
 
-  // Hash the password
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const newAdmin = new Admin({
@@ -56,18 +50,13 @@ exports.addAdminUser = async (req, res) => {
   }
 };
 
-
-
-
 exports.getOverview = async (req, res) => {
   try {
-    // Fetching data for the dashboard overview
-    const totalProducts = await Product.countDocuments(); // Total number of products
-    const totalOrders = await Order.countDocuments();     // Total number of orders
-    const lowStock = await Product.countDocuments({ stock: { $lt: 5 } }); // Low stock products
-    const totalUsers = await User.countDocuments();       // Total number of users
-
-    // Pass the data to the overview view
+    
+    const totalProducts = await Product.countDocuments(); 
+    const totalOrders = await Order.countDocuments();   
+    const lowStock = await Product.countDocuments({ stock: { $lt: 5 } }); 
+    const totalUsers = await User.countDocuments();      
     res.render("admin/overview", {
       totalProducts,
       totalOrders,
@@ -85,16 +74,13 @@ exports.getOverview = async (req, res) => {
   }
 };
 
-// Add New Product
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/add-product',{ errors: {}, name: '', price: '', stock: '', description: '' });
 };
 
-
-// Set up storage for the uploaded files
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-      cb(null, 'public/uploads'); // Directory to save the uploaded files
+      cb(null, 'public/uploads'); 
   },
   filename: function (req, file, cb) {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -107,9 +93,6 @@ const upload = multer({ storage: storage });
 
 // Export the multer middleware to be used in routes
 exports.upload = upload.single('image');
-
-
-
 
 // Controller function to add a product
 exports.addProduct = async (req, res, next) => {
@@ -131,19 +114,19 @@ exports.addProduct = async (req, res, next) => {
       price,
       stock,
       description,
-      image // Save the image filename to the product document
+      image 
   });
  
   try {
       await newProduct.save();
-      res.redirect('/admin/product-list'); // Redirect to product list after adding
+      res.redirect('/admin/product-list'); 
   } catch (error) {
       console.error('error saving product:',error);
       res.status(500).send('Server Error');
   }
 };
 
-// Edit Product
+
 exports.getEditProduct = async (req, res, next) => {
   try {
       const product = await Product.findById(req.params.id);
@@ -182,7 +165,7 @@ exports.postEditProduct = async (req, res, next) => {
     product.stock = stock;
     product.description = description;
 
-    await product.save(); // Save changes to MongoDB
+    await product.save(); 
 
     res.redirect('/admin/product-list');
   } catch (err) {
@@ -191,7 +174,6 @@ exports.postEditProduct = async (req, res, next) => {
   }
 };
 
-// Delete Product
 exports.postDeleteProduct = async (req, res, next) => {
   try {
       await Product.findByIdAndDelete(req.params.id);
@@ -202,7 +184,6 @@ exports.postDeleteProduct = async (req, res, next) => {
   }
 };
 
-// List Products
 exports.getProductList = async (req, res, next) => {
     try {
         const products = await Product.find();
@@ -213,7 +194,6 @@ exports.getProductList = async (req, res, next) => {
     }
 };
 
-// Stock Management
 exports.getStock = async (req, res, next) => {
     try {
         const lowStockProducts = await Product.find({ stock: { $lt: 5 } });
@@ -252,18 +232,20 @@ exports.getUserOrders = async (req, res) => {
 // Toggle block/unblock status for a user
 exports.toggleBlockUser = async (req, res) => {
   try {
-      const userId = req.params.id;
-      const user = await User.findById(userId);
-      if (user) {
-          user.isBlocked = !user.isBlocked;
-        await user.save();
-        const action = user.isBlocked ? 'blocked' : 'unblocked';
-        res.json({ message: `User ${action} successfully.` });
-      } else {
-          res.status(404).json({ message: 'User not found' });
+      const user = await User.findById(req.params.id);
+      if (!user) {
+          return res.status(404).json({ message: "User not found" });
       }
+
+      // Toggle the isBlocked status
+      user.isBlocked = !user.isBlocked;
+      await user.save();
+
+      const message = user.isBlocked ? 'User has been blocked.' : 'User has been unblocked.';
+      res.json({ message });
   } catch (error) {
-      res.status(500).json({ message: 'Error blocking/unblocking user' });
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -313,4 +295,9 @@ exports.getOrderManagement = async (req, res) => {
       console.error(error);
       res.status(500).send('Server error');
   }
+};
+
+exports.setNoCacheHeaders = (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  next();
 };

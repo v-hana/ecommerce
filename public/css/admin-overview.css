@@ -130,7 +130,7 @@ table {
 }
 
 th, td {
-  border: 1px solid #ccc;
+  border: 1px solid#ccc;
   padding: 10px;
   text-align: left;
 }
@@ -175,13 +175,13 @@ th {
   background-color: rgb(69, 64, 64);
   color: white;
   border: none;
-  padding: 5px 10px 5px 10px;
+  padding: 10px 15px 10px 15px;
   border-radius: 5px;
   cursor: pointer;
 }
 .user-overview th{
-  background-color: #007bff;
-  color: white;
+  background-color: #ccc;
+  color: black;
 }
 
 /* admin-overview.css or order-management.css */
@@ -189,6 +189,14 @@ th {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+}
+.order-table button{
+  background-color: #605a5a;
+  color: white;
+  padding: 5px 10px 5px 10px;
+  border: none;
+  border-radius: 5px;
+
 }
 
 .order-table th, .order-table td {

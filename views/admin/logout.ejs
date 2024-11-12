@@ -7,16 +7,7 @@
     <link rel="stylesheet" href="/css/admin-overview.css">
 </head>
 <body>
-    <div class="sidebar">
-        <h2>Admin Dashboard</h2>
-        <ul>
-            <li><a href="overview">Dashboard Overview</a></li>
-            <li><a href="add-product">Add New Product</a></li>
-            <li><a href="product-list">List of Full Products</a></li>
-            <li><a href="stock">Stock</a></li>
-            <li><a href="logout" onclick="return confirmLogout();">Logout</a></li>
-        </ul>
-    </div>
+    <%- include('layout/sidebar') %>
 
     <div class="content">
         <header>

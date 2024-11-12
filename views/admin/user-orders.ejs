@@ -10,17 +10,8 @@
 </head>
 <body>
  
-    <div class="sidebar">
-        <h2>Admin Dashboard</h2>
-        <ul>
-            <li><a href="/admin/overview">Dashboard Overview</a></li>
-            <li><a href="/admin/add-product">Add New Product</a></li>
-            <li><a href="/admin/product-list">List of Full Products</a></li>
-            <li><a href="/admin/stock">Stock</a></li>
-            <li><a href="/admin/logout" onclick="return confirmLogout();">Logout</a></li>
-        </ul>
-    </div>
-
+    <%- include('layout/sidebar') %>
+    
     <div class="content">
         <header>
             <h1>User Orders</h1>
@@ -30,8 +21,8 @@
             <table>
                 <thead>
                     <tr>
+                        <th>Sl No</th>
                         <th>Order ID</th>
-                       
                         <th>Status</th>
                         <th>Total Price</th>
                         <th>Order Date</th>
@@ -39,11 +30,11 @@
                 </thead>
                 <tbody>
                     <% if (orders.length > 0) { %>
-                        <% orders.forEach(order => { %>
+                        <% orders.forEach((order,index) => { %>
                           
 
                             <tr>
-                                <!-- Order ID as a link to view full order details -->
+                                <td><%= index + 1 %></td>
                                 <td><a href="/admin/orders/<%= order._id %>"><%= order._id %></a></td>
                                 <td><%= order.status %></td>
                                 <td>$ <%= order.totalAmount %>.00</td>
@@ -62,10 +53,7 @@
     </div>
   
 
-    <script>
-        function confirmLogout() {
-            return confirm("Are you sure you want to logout?");
-        }
-    </script>
+    
+    <%- include('layout/logout') %>
 </body>
 </html>

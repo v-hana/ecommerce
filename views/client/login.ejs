@@ -5,9 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Page</title>
     <link rel="stylesheet" href="/css/login.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="login-container">
+        <% if (errorMessages) { %>
+            <% for (const field in errorMessages) { %>
+                <p><%= errorMessages[field] %></p>
+            <% } %>
+        <% } %>
+        <% if (blockMessage) { %>
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Access Denied',
+                    text: '<%= blockMessage %>',
+                    confirmButtonText: 'OK'
+                });
+            </script>
+        <% } %>
         <div class="login-box">
             <h2>Login</h2>
             <% if (errorMessages && errorMessages.general) { %>
@@ -47,4 +63,5 @@
         </div>
     </div>
 </body>
+
 </html>
