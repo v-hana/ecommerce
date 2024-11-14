@@ -55,19 +55,19 @@ exports.getProductDetail = async (req, res) => {
 
 exports.getProfile = async (req, res) => {
   try {
-      // Check if req.user exists
-      if (!req.user) {
+      // Check if req.user exists (this should always be true if isAuthenticated middleware works)
+      if (!req.session.userId) {
           return res.status(401).send('User not authenticated');
       }
-      
+
       // Fetch user profile by ID
-      const user = await User.findById(req.user._id);
+      const user = await User.findById(req.session.userId);
       
       // If user not found, handle accordingly
       if (!user) {
           return res.status(404).send('User not found');
       }
-      
+
       // Render profile view with user data
       res.render('client/profile', { user });
   } catch (error) {
@@ -75,13 +75,20 @@ exports.getProfile = async (req, res) => {
       res.status(500).send('Server Error');
   }
 };
-
 exports.getOrders = async (req, res) => {
-  try {
+
+  try { 
       // Check if req.user exists
-      if (!req.user) {
+      if (!req.session.userId) {
           return res.status(401).send('User not authenticated');
-      }
+    }
+    const user = await User.findById(req.session.userId);
+    if (!user) {
+      return res.status(401).send('User not found');
+    }
+    
+    req.user = user;  // Set the user object to req.user
+
       
       // Fetch orders for the logged-in user
       const orders = await Order.find({ userId: req.user._id }).populate('items.productId');

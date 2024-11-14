@@ -60,8 +60,9 @@ exports.placeOrder = async (req, res) => {
     return res.redirect('/order-confirmation');
   } else if (paymentMethod === 'Razorpay') {
     // Create Razorpay order
+    const amountInPaise = Math.round(totalAmount * 100);
     const options = {
-      amount: totalAmount * 100, 
+      amount: amountInPaise,
       currency: 'INR',
       receipt: `order_rcptid_${Date.now()}`,
     };

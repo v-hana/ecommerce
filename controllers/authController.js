@@ -32,7 +32,7 @@ exports.postSignup = async (req, res) => {
 };
 
 exports.getLogin = (req, res) => {
-    res.render('client/login', { errorMessages: {}  });
+    res.render('client/login', { errorMessages: {} ,blockMessage:null });
 };
 
 exports.postLogin = async (req, res) => {
@@ -67,6 +67,7 @@ exports.postLogin = async (req, res) => {
         }
 
         req.session.userId = user._id;
+        req.user = user;  
         res.redirect('/home');
     } catch (err) {
         res.render('client/login', { errorMessages: {}, blockMessage: null, error: 'Error logging in, please try again.' });
