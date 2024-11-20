@@ -19,6 +19,42 @@ exports.getCheckout = async (req, res) => {
   res.render('client/checkout', { cartItems, totalAmount });
 };
 
+// Helper function to create an order
+const createOrder = async (userId, cart, totalAmount, addressDetails, paymentMethod, paymentStatus) => {
+  const newOrder = new Order({
+    userId,
+    items: cart.items.map(item => ({
+      productId: item.productId._id,
+      name: item.productId.name,
+      price: item.productId.price,
+      quantity: item.quantity,
+    })),
+    totalAmount,
+    shippingAddress: addressDetails,
+    paymentMethod,
+    paymentStatus,
+  });
+
+  await newOrder.save();
+
+  // Clear cart after order creation
+  await Cart.findOneAndDelete({ userId });
+
+  // Update stock for purchased products
+  for (let item of cart.items) {
+    const product = await Product.findById(item.productId._id);
+    if (product.stock >= item.quantity) {
+      product.stock -= item.quantity;
+      await product.save();
+    } else {
+      throw new Error(`${product.name} is out of stock.`);
+    }
+  }
+
+  return newOrder;
+};
+
+// Place Order Function
 exports.placeOrder = async (req, res) => {
   const { fullName, address, city, postalCode, country, paymentMethod } = req.body;
   const userId = req.session.userId;
@@ -29,37 +65,18 @@ exports.placeOrder = async (req, res) => {
   const discount = req.session.discount || 0;
   const totalAmount = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0) - discount;
 
-  if (paymentMethod === 'COD') {
-    // Handle Cash on Delivery
-    const newOrder = new Order({
-      userId,
-      items: cart.items.map(item => ({
-        productId: item.productId._id,
-        name: item.productId.name,
-        price: item.productId.price,
-        quantity: item.quantity
-      })),
-      totalAmount,
-      shippingAddress: { address, city, postalCode, country },
-      paymentMethod,
-      paymentStatus: 'Paid' // Assume COD is always paid after delivery
-    });
+  const addressDetails = { address, city, postalCode, country };
 
-    await newOrder.save();
-    await Cart.findOneAndDelete({ userId });
-    req.session.discount = 0;
-    for (let item of cart.items) {
-      const product = await Product.findById(item.productId._id);
-      if (product.stock >= item.quantity) {
-        product.stock -= item.quantity;
-        await product.save();
-      } else {
-        return res.status(400).json({ message: `${product.name} is out of stock.` });
-      }
+  if (paymentMethod === 'COD') {
+    try {
+      await createOrder(userId, cart, totalAmount, addressDetails, paymentMethod, 'Paid');
+      req.session.discount = 0; // Reset discount after order placement
+      return res.redirect('/order-confirmation');
+    } catch (error) {
+      console.error('Error processing COD order:', error);
+      return res.status(500).send(error.message);
     }
-    return res.redirect('/order-confirmation');
   } else if (paymentMethod === 'Razorpay') {
-    // Create Razorpay order
     const amountInPaise = Math.round(totalAmount * 100);
     const options = {
       amount: amountInPaise,
@@ -69,7 +86,6 @@ exports.placeOrder = async (req, res) => {
 
     try {
       const razorpayOrder = await razorpay.orders.create(options);
-      console.log("Razorpay Order:", razorpayOrder);
 
       // Store order details in session for verification later
       req.session.orderDetails = {
@@ -80,22 +96,23 @@ exports.placeOrder = async (req, res) => {
         country,
         paymentMethod,
         razorpayOrderId: razorpayOrder.id,
-        totalAmount
+        totalAmount,
       };
 
-      res.render('client/razorpayPayment', {
+      return res.render('client/razorpayPayment', {
         orderId: razorpayOrder.id,
         amount: options.amount,
-        currency: options.currency
+        currency: options.currency,
       });
     } catch (error) {
       console.error('Error creating Razorpay order:', error);
-      res.status(500).send('Error processing payment.');
+      return res.status(500).send('Error processing payment.');
     }
   } else {
-    res.status(400).send('Invalid payment method selected.');
+    return res.status(400).send('Invalid payment method selected.');
   }
 };
+
 
 exports.orderConfirmation = (req, res) => {
   res.render('client/confirmation');

@@ -6,6 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const Admin = require('../models/adminModel');
+const Coupon = require('../models/coupon');
 
 
 // Controller to handle admin login
@@ -299,5 +300,84 @@ exports.getOrderManagement = async (req, res) => {
 
 exports.setNoCacheHeaders = (req, res, next) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-  next();
+  next();
 };
+// Get all coupons
+exports.getCoupons = async (req, res) => {
+  try {
+      const coupons = await Coupon.find();
+      res.render('admin/admin-coupons', { coupons });
+  } catch (err) {
+      console.error('Error fetching coupons:', err);
+      res.status(500).send('Error loading coupons.');
+  }
+};
+ 
+// Add a new coupon
+exports.addCoupon = async (req, res) => {
+  const { code, discount, expirationDate, isActive } = req.body;
+  try {
+      const newCoupon = new Coupon({
+          code,
+          discount: parseFloat(discount),
+          expirationDate: new Date(expirationDate),
+          isActive: isActive === 'true',
+      });
+      await newCoupon.save();
+      res.redirect('/admin/admin-coupons');
+  } catch (err) {
+      console.error('Error adding coupon:', err);
+      res.status(500).send('Error adding coupon.');
+  }
+};
+
+// Edit a coupon
+exports.editCouponPage = async (req, res) => {
+  const { id } = req.params;
+  try {
+      const coupon = await Coupon.findById(id);
+      if (!coupon) {
+          return res.status(404).send('Coupon not found.');
+      }
+      res.render('admin/edit-coupon', { coupon });
+  } catch (error) {
+      console.error('Error fetching coupon:', error);
+      res.status(500).send('Server error.');
+  }
+};
+
+exports.updateCoupon = async (req, res) => {
+  const { id } = req.params;
+  const { code, discount, expirationDate, isActive } = req.body;
+  try {
+      await Coupon.findByIdAndUpdate(id, {
+          code,
+          discount,
+          expirationDate,
+          isActive: isActive === 'true',
+      });
+      res.redirect('/admin/admin-coupons');
+  } catch (error) {
+      console.error('Error updating coupon:', error);
+      res.status(500).send('Error updating coupon.');
+  }
+};
+
+
+// Delete a coupon
+exports.deleteCoupon = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+      const deletedCoupon = await Coupon.findByIdAndDelete(id);
+      if (!deletedCoupon) {
+          return res.status(404).json({ success: false, message: 'Coupon not found.' });
+      }
+      res.json({ success: true, message: 'Coupon deleted successfully.' });
+  } catch (error) {
+      console.error('Error deleting coupon:', error);
+      res.status(500).json({ success: false, message: 'Error deleting coupon.' });
+  }
+};
+
+

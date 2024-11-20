@@ -44,6 +44,19 @@ router.post('/order/:id/status',  isAuthenticated,adminController.updateOrderSta
 router.post('/user/:id/block', adminController.toggleBlockUser);
 
 router.get('/order-management', isAuthenticated, adminController.setNoCacheHeaders,adminController.getOrderManagement);
+// Get coupon management page
+router.get('/admin-coupons', adminController.getCoupons);
+
+// Add a new coupon
+router.post('/admin-coupons', adminController.addCoupon);
+
+// Edit a coupon
+router.get('/admin-coupons/:id/edit', adminController.editCouponPage);
+
+router.post('/admin-coupons/:id/edit', adminController.updateCoupon);
+
+// Delete a coupon
+router.post('/admin-coupons/:id/delete', adminController.deleteCoupon);
 
 // Stock
 router.get('/stock',  isAuthenticated,adminController.setNoCacheHeaders,adminController.getStock);

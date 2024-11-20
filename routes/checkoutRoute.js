@@ -11,34 +11,41 @@ router.get('/checkout', isAuthenticated,checkoutController.getCheckout);
 router.post('/place-order', checkoutController.placeOrder);
 
 router.get('/order-confirmation', checkoutController.orderConfirmation); // Order confirmation page
-// Razorpay payment verification route
+
+//Razorpay Payment Verification Route
 router.post('/payment/verify', verifyPayment, async (req, res) => {
   try {
     const { orderDetails } = req.session;
+    const userId = req.session.userId;
 
-    // Save the order to the database after successful payment verification
-    const newOrder = new Order({
-      userId: req.session.userId,
-      items: orderDetails.items,
-      totalAmount: orderDetails.totalAmount,
-      shippingAddress: orderDetails.shippingAddress,
-      paymentMethod: 'Razorpay',
-      paymentStatus: 'Paid'
-    });
+    // Retrieve cart details to include items in the order
+    const cart = await Cart.findOne({ userId }).populate('items.productId');
+    if (!cart) return res.status(400).send('No items in cart to place the order.');
 
-    await newOrder.save();
+    await createOrder(
+      userId,
+      cart,
+      orderDetails.totalAmount,
+      {
+        address: orderDetails.address,
+        city: orderDetails.city,
+        postalCode: orderDetails.postalCode,
+        country: orderDetails.country,
+      },
+      'Razorpay',
+      'Paid'
+    );
 
-    // Clear session details after order placement
+    // Clear session details
     req.session.orderDetails = null;
     req.session.discount = 0;
 
-    res.redirect('/checkout/success');
+    return res.redirect('/checkout/success');
   } catch (error) {
-    console.error('Error saving order after Razorpay payment verification:', error);
-    res.status(500).send('Error completing your order.');
+    console.error('Error processing Razorpay order:', error);
+    return res.status(500).send('Error completing your order.');
   }
 });
-
 // Success page after order confirmation
 router.get('/success', checkoutController.orderConfirmation);
 

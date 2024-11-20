@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupon Management</title>
+    <link rel="stylesheet" href="/css/admin-coupon.css">
+    <link rel="stylesheet" href="/css/admin-overview.css">
+
+</head>
+
+<body>
+    <%- include('layout/sidebar') %>
+    <div class="content">
+        <header>
+            <h1>Coupon Management</h1>
+        </header>
+        <section>
+            <div class="coupon-list">
+                <h2>All Coupons</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Discount (%)</th>
+                            <th>Expiration Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% coupons.forEach((coupon) => { %>
+                            <tr>
+                                <td><%= coupon.code %></td>
+                                <td><%= coupon.discount %></td>
+                                <td><%= coupon.expirationDate.toISOString().split('T')[0] %></td>
+                                <td><%= coupon.isActive ? 'Active' : 'Inactive' %></td>
+                                <td>
+                                    <button onclick="editCoupon('<%= coupon._id %>')">Edit</button>
+                                    <button onclick="deleteCoupon('<%= coupon._id %>')">Delete</button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="add-coupon">
+                <h2>Add Coupon</h2>
+                <form action="/admin/admin-coupons" method="POST">
+                    <label for="code">Code:</label>
+                    <input type="text" id="code" name="code" required>
+                    <label for="discount">Discount (%):</label>
+                    <input type="number" id="discount" name="discount" required>
+                    <label for="expirationDate">Expiration Date:</label>
+                    <input type="date" id="expirationDate" name="expirationDate" required>
+                    <label for="isActive">Active:</label>
+                    <input type="checkbox" id="isActive" name="isActive" value="true">
+                    <button type="submit">Add Coupon</button>
+                </form>
+            </div>
+        </section>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function editCoupon(couponId) {
+    // Redirect to an edit page
+    window.location.href = `/admin/admin-coupons/${couponId}/edit`;
+}
+
+</script>
+<script>
+    // Delete Coupon
+    async function deleteCoupon(couponId) {
+        const confirmation = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+        });
+
+        if (confirmation.isConfirmed) {
+            try {
+                const response = await fetch(`/admin/admin-coupons/${couponId}/delete`, {
+                    method: 'POST',
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire('Deleted!', result.message, 'success').then(() => {
+                        location.reload(); // Reload page to reflect the deletion
+                    });
+                } else {
+                    Swal.fire('Error!', result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting coupon:', error);
+                Swal.fire('Error!', 'Failed to delete the coupon.', 'error');
+            }
+        }
+    }
+</script>
+
+</html>

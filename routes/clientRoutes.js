@@ -33,4 +33,12 @@ router.get('/profile',isAuthenticated,clientController.getProfile);
 // Orders route
 router.get('/orders', isAuthenticated,clientController.getOrders)
 
+router.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+      if (err) {
+          return res.redirect('/home');
+      }
+      res.redirect('/auth/login');
+  });
+});
 module.exports = router;
