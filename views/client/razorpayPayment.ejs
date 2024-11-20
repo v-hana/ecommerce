@@ -1,43 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Razorpay Payment</title>
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-</head>
-<body>
-  <h2>Complete Your Payment</h2>
-  <script>
-    const options = {
-      key: 'rzp_test_RJf3MNDoHKza5M',
-      amount: '<%= amount %>',
-      currency: '<%= currency %>',
-      name: 'Your Company Name',
-      description: 'Order Payment',
-      order_id: '<%= orderId %>',
-      handler: function (response) {
-        alert('Payment successful! Payment ID: ' + response.razorpay_payment_id);
-        window.location.href = '/order-confirmation';
-      },
-      prefill: {
-        name: 'Customer Name',
-        email: 'customer@example.com',
-        contact: '9999999999'
-      }
-    };
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  const options = {
+    key: 'rzp_test_RJf3MNDoHKza5M', // Your Razorpay key_id
+    amount: '<%= amount %>',
+    currency: '<%= currency %>',
+    order_id: '<%= orderId %>',
+    name: 'Your Company Name',
+    description: 'Test Transaction',
+    handler: function(response) {
+      fetch('/verify-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(response)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message === 'Payment verification failed.') {
+          alert('Payment verification failed');
+        } else {
+          window.location.href = '/order-confirmation';
+        }
+      })
+      .catch(error => {
+        console.error('Payment verification error:', error);
+      });
+    }
+  };
 
-    const rzp = new Razorpay(options);
-    rzp.open();
-  </script>
-
-<footer class="footer-section">
-  <%- include('layout/footer') %>
-</footer>
-<!-- End Footer Section -->	
-
-
-<script src="js/bootstrap.bundle.min.js"></script>
-<script src="js/tiny-slider.js"></script>
-<script src="js/custom.js"></script>
-</body>
-</html>
+  const rzp = new Razorpay(options);
+  rzp.open();
+</script>

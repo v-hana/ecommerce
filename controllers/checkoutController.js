@@ -1,14 +1,16 @@
 const Razorpay = require('razorpay');
+const crypto = require('crypto');
 const Order = require('../models/order');
 const Cart = require('../models/cart');
-const Product=require('../models/product')
+const Product = require('../models/product');
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
-  key_id: 'rzp_test_RJf3MNDoHKza5M',
-  key_secret: 'gcdfcHLWnt5eJrPOUwfjCsQC'
+  key_id: 'rzp_test_RJf3MNDoHKza5M', // Your Razorpay key_id
+  key_secret: 'gcdfcHLWnt5eJrPOUwfjCsQC' // Your Razorpay key_secret
 });
 
+// Display checkout page
 exports.getCheckout = async (req, res) => {
   const userId = req.session.userId;
   const cart = await Cart.findOne({ userId }).populate('items.productId');
@@ -54,7 +56,7 @@ const createOrder = async (userId, cart, totalAmount, addressDetails, paymentMet
   return newOrder;
 };
 
-// Place Order Function
+// Place an order
 exports.placeOrder = async (req, res) => {
   const { fullName, address, city, postalCode, country, paymentMethod } = req.body;
   const userId = req.session.userId;
@@ -64,7 +66,6 @@ exports.placeOrder = async (req, res) => {
 
   const discount = req.session.discount || 0;
   const totalAmount = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0) - discount;
-
   const addressDetails = { address, city, postalCode, country };
 
   if (paymentMethod === 'COD') {
@@ -77,7 +78,7 @@ exports.placeOrder = async (req, res) => {
       return res.status(500).send(error.message);
     }
   } else if (paymentMethod === 'Razorpay') {
-    const amountInPaise = Math.round(totalAmount * 100);
+    const amountInPaise = Math.round(totalAmount * 100); // Razorpay accepts payment in paise (1 INR = 100 paise)
     const options = {
       amount: amountInPaise,
       currency: 'INR',
@@ -87,7 +88,7 @@ exports.placeOrder = async (req, res) => {
     try {
       const razorpayOrder = await razorpay.orders.create(options);
 
-      // Store order details in session for verification later
+      // Store order details in session for later verification
       req.session.orderDetails = {
         fullName,
         address,
@@ -113,7 +114,59 @@ exports.placeOrder = async (req, res) => {
   }
 };
 
+// Verify Razorpay payment
+exports.verifyPayment = async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
+  // Recreate the Razorpay signature to verify
+  const generatedSignature = crypto
+    .createHmac('sha256', razorpay.key_secret)
+    .update(razorpay_order_id + '|' + razorpay_payment_id)
+    .digest('hex');
+
+  if (generatedSignature !== razorpay_signature) {
+    return res.status(400).json({ message: 'Payment verification failed.' });
+  }
+
+  // Retrieve the session-stored order details
+  const orderDetails = req.session.orderDetails;
+  if (!orderDetails) {
+    return res.status(400).json({ message: 'Order details not found in session.' });
+  }
+
+  try {
+    const userId = req.session.userId;
+    const cart = await Cart.findOne({ userId }).populate('items.productId');
+
+    if (!cart) return res.status(400).json({ message: 'No items in cart.' });
+
+    // Create the order in the database and mark it as 'Paid'
+    await createOrder(
+      userId,
+      cart,
+      orderDetails.totalAmount,
+      {
+        address: orderDetails.address,
+        city: orderDetails.city,
+        postalCode: orderDetails.postalCode,
+        country: orderDetails.country,
+      },
+      orderDetails.paymentMethod,
+      'Paid'
+    );
+
+    // Reset the discount and clear session order details
+    req.session.discount = 0;
+    req.session.orderDetails = null;
+
+    res.json({ message: 'Payment successful' });
+  } catch (error) {
+    console.error('Error processing order:', error);
+    return res.status(500).json({ message: 'Error saving order details.' });
+  }
+};
+
+// Render order confirmation page
 exports.orderConfirmation = (req, res) => {
   res.render('client/confirmation');
 };

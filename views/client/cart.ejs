@@ -151,28 +151,38 @@
 		<script src="js/custom.js"></script>
     <script>
       document.querySelectorAll('.change-quantity').forEach(button => {
-          button.addEventListener('click', async (event) => {
-              const productId = event.target.getAttribute('data-id');
-              const action = event.target.getAttribute('data-action');
-              console.log(action);
-              
-              
-              const response = await fetch(`/cart/update-quantity`, {
-                  method: 'PATCH',  
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ productId, action })
-              });
-              const data = await response.json();
-  
-              if (data.success) {
-                  // Update the quantity displayed in the UI
-                  const quantityElement = document.getElementById(`quantity-${productId}`);
-                  quantityElement.textContent = data.newQuantity;
-              } else {
-                  alert(data.message);
-              }
-          });
-      });
+    button.addEventListener('click', async (event) => {
+        const productId = event.target.getAttribute('data-id');
+        const action = event.target.getAttribute('data-action');
+        
+        const response = await fetch(`/cart/update-quantity`, {
+            method: 'PATCH',  
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId, action })
+        });
+        
+        const data = await response.json();
+
+        if (data.success) {
+            // Update the quantity displayed in the UI
+            const quantityElement = document.getElementById(`quantity-${productId}`);
+            quantityElement.textContent = data.newQuantity;
+
+            // Update the total for this product
+            const priceElement = document.querySelector(`#quantity-${productId}`).closest('tr').querySelector('td:nth-child(4)');
+            priceElement.textContent = `$${data.newTotalForItem}`;
+
+            // Update the cart subtotal and total
+            const totalAmountElement = document.getElementById('totalAmount');
+            const finalTotalElement = document.getElementById('finalTotal');
+            totalAmountElement.innerHTML = `<strong class="text-black">$${data.updatedSubtotal}</strong>`;
+            finalTotalElement.textContent = `$${data.updatedSubtotal}`;
+        } else {
+            alert(data.message);
+        }
+    });
+});
+
   </script>
 
 <script>

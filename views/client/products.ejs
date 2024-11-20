@@ -48,7 +48,7 @@
 								<% if (product.stock > 0) { %>
 									<button class="cart-button" data-id="<%= product._id %>" onclick="addToCart()">Add to Cart</button>
 									<% } else { %>
-										<button class="cart-button" disabled>Out of Stock</button>
+										<button class="cart-button out-of-stock" >Out of Stock</button>
 									<% } %>
 					
 								</span>
@@ -105,6 +105,8 @@
   });
 			
 	</script>
+
+	
 	<script>
     // Initialize cart count
     let cartCount = 0;

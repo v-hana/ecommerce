@@ -11,7 +11,7 @@ exports.addToCart = async (req, res) => {
       // Find the product by its ID
       const product = await Product.findById(productId);
       if (!product) {
-          return res.status(404).json({ message: 'Product not found.' });
+          return res.status(404).json({ message: 'This product is currently unavailable. Please check back later.' });
       }
 
       let cart = await Cart.findOne({ userId });
@@ -53,41 +53,61 @@ exports.getCart = async (req, res) => {
     }
 };
 exports.updateQuantity = async (req, res) => {
-  const { productId, action } = req.body;
-  const userId = req.session.userId;
+    const { productId, action } = req.body;
+    const userId = req.session.userId;
 
-  try {
-      const cart = await Cart.findOne({ userId });
+    try {
+        // Find the user's cart
+        const cart = await Cart.findOne({ userId });
 
-      if (!cart) {
-          return res.status(404).json({ success: false, message: 'Cart not found.' });
-      }
+        if (!cart) {
+            return res.status(404).json({ success: false, message: 'Cart not found.' });
+        }
 
-      const item = cart.items.find(item => item.productId.toString() === productId);
-      
-      if (!item) {
-          return res.status(404).json({ success: false, message: 'Item not found in cart.' });
-      }
+        // Find the item in the cart
+        const item = cart.items.find(item => item.productId.toString() === productId);
 
-      if (action === 'increment') {
-          item.quantity++;
-      } else if (action === 'decrement') {
-          if (item.quantity > 1) {
-              item.quantity--;
-          } else {
-              // Optional: remove the item if quantity is 1 and decremented
-              cart.items = cart.items.filter(item => item.productId.toString() !== productId);
-          }
-      }
+        if (!item) {
+            return res.status(404).json({ success: false, message: 'Item not found in cart.' });
+        }
 
-      await cart.save();
-      res.status(200).json({ success: true, newQuantity: item.quantity });
-  } catch (err) {
-      console.error('Error updating cart quantity:', err);
-      res.status(500).json({ success: false, message: 'Error updating cart.' });
-  }
+        // Update quantity based on action
+        if (action === 'increment') {
+            item.quantity++;
+        } else if (action === 'decrement') {
+            if (item.quantity > 1) {
+                item.quantity--;
+            } else {
+                // Remove item if quantity reaches zero
+                cart.items = cart.items.filter(item => item.productId.toString() !== productId);
+            }
+        } else {
+            return res.status(400).json({ success: false, message: 'Invalid action.' });
+        }
+
+        // Save updated cart
+        await cart.save();
+
+        // Recalculate subtotal
+        const updatedSubtotal = cart.items.reduce(
+            (total, item) => total + item.quantity * item.price, // Ensure `price` exists in the cart schema
+            0
+        );
+
+        // Response object
+        const response = {
+            success: true,
+            newQuantity: item.quantity,
+            newTotalForItem: item.quantity * item.price,
+            updatedSubtotal: updatedSubtotal
+        };
+
+        res.status(200).json(response);
+    } catch (err) {
+        console.error('Error updating cart quantity:', err);
+        res.status(500).json({ success: false, message: 'Error updating cart.' });
+    }
 };
-
 
 exports.applyCoupon = async (req, res) => {
   const { couponCode } = req.body;

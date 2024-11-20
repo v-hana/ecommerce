@@ -2,19 +2,40 @@
 <html lang="en">
 <head>
   <%- include('layout/head') %>
+  <style>
+    .error-message {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 4px;
+    }
+  </style>
 </head>
 <body>
   <%- include('layout/navbar') %>
 
   <div class="checkout-container">
     <h2>Checkout</h2>
-    <form action="/place-order" method="POST">
+    <form action="/place-order" method="POST" id="checkoutForm" novalidate>
       <h4>Shipping Address</h4>
+      <label for="address">Address:</label>
       <input type="text" name="address" placeholder="Address" required>
+      <div class="error-message" id="addressError"></div>
+
+      <label for="city">City:</label>
       <input type="text" name="city" placeholder="City" required>
+      <div class="error-message" id="cityError"></div>
+
+      <label for="postalCode">Postal Code:</label>
       <input type="text" name="postalCode" placeholder="Postal Code" required>
+      <div class="error-message" id="postalCodeError"></div>
+
+      <label for="country">Country:</label>
       <input type="text" name="country" placeholder="Country" required>
+      <div class="error-message" id="countryError"></div>
+
+      <label for="contact">Contact Number:</label>
       <input type="text" name="contact" placeholder="Contact Number" required>
+      <div class="error-message" id="contactError"></div>
       
       <h4>Order Summary</h4>
       <ul>
@@ -49,5 +70,32 @@
   <script src="js/bootstrap.bundle.min.js"></script>
   <script src="js/tiny-slider.js"></script>
   <script src="js/custom.js"></script>
+  
+  <script>
+    document.getElementById("checkoutForm").addEventListener("submit", function(event) {
+      let valid = true;
+
+      // Clear previous error messages
+      const errorMessages = document.querySelectorAll('.error-message');
+      errorMessages.forEach(msg => msg.textContent = '');
+
+      // Check required fields
+      const requiredFields = document.querySelectorAll('input[required]');
+      requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+          valid = false;
+          const errorMessage = `This field is required.`;
+          const errorDiv = document.getElementById(field.name + 'Error');
+          errorDiv.textContent = errorMessage;
+        }
+      });
+
+     
+
+      if (!valid) {
+        event.preventDefault();  // Prevent form submission if there are errors
+      }
+    });
+  </script>
 </body>
 </html>

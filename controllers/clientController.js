@@ -43,7 +43,7 @@ exports.getProductDetail = async (req, res) => {
     const product = await Product.findById(productId);
 
     if (!product) {
-      return res.status(404).send('Product not found');
+      return res.status(404).json({ message: 'This product is currently unavailable. Please check back later.' });
     }
 
     res.render('client/productDetail', { product });
