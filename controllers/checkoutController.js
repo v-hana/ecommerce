@@ -4,13 +4,13 @@ const Order = require('../models/order');
 const Cart = require('../models/cart');
 const Product = require('../models/product');
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: 'rzp_test_RJf3MNDoHKza5M', // Your Razorpay key_id
-  key_secret: 'gcdfcHLWnt5eJrPOUwfjCsQC' // Your Razorpay key_secret
-});
 
-// Display checkout page
+const razorpay = new Razorpay({
+  key_id: 'rzp_test_RJf3MNDoHKza5M',
+  key_secret: 'gcdfcHLWnt5eJrPOUwfjCsQC'
+})
+
+
 exports.getCheckout = async (req, res) => {
   const userId = req.session.userId;
   const cart = await Cart.findOne({ userId }).populate('items.productId');
@@ -21,7 +21,7 @@ exports.getCheckout = async (req, res) => {
   res.render('client/checkout', { cartItems, totalAmount });
 };
 
-// Helper function to create an order
+
 const createOrder = async (userId, cart, totalAmount, addressDetails, paymentMethod, paymentStatus) => {
   const newOrder = new Order({
     userId,
@@ -38,11 +38,8 @@ const createOrder = async (userId, cart, totalAmount, addressDetails, paymentMet
   });
 
   await newOrder.save();
-
-  // Clear cart after order creation
   await Cart.findOneAndDelete({ userId });
 
-  // Update stock for purchased products
   for (let item of cart.items) {
     const product = await Product.findById(item.productId._id);
     if (product.stock >= item.quantity) {
@@ -56,7 +53,7 @@ const createOrder = async (userId, cart, totalAmount, addressDetails, paymentMet
   return newOrder;
 };
 
-// Place an order
+
 exports.placeOrder = async (req, res) => {
   const { fullName, address, city, postalCode, country, paymentMethod } = req.body;
   const userId = req.session.userId;
@@ -71,14 +68,14 @@ exports.placeOrder = async (req, res) => {
   if (paymentMethod === 'COD') {
     try {
       await createOrder(userId, cart, totalAmount, addressDetails, paymentMethod, 'Paid');
-      req.session.discount = 0; // Reset discount after order placement
+      req.session.discount = 0; 
       return res.redirect('/order-confirmation');
     } catch (error) {
       console.error('Error processing COD order:', error);
       return res.status(500).send(error.message);
     }
   } else if (paymentMethod === 'Razorpay') {
-    const amountInPaise = Math.round(totalAmount * 100); // Razorpay accepts payment in paise (1 INR = 100 paise)
+    const amountInPaise = Math.round(totalAmount * 100); 
     const options = {
       amount: amountInPaise,
       currency: 'INR',
@@ -88,7 +85,7 @@ exports.placeOrder = async (req, res) => {
     try {
       const razorpayOrder = await razorpay.orders.create(options);
 
-      // Store order details in session for later verification
+      
       req.session.orderDetails = {
         fullName,
         address,
@@ -114,11 +111,11 @@ exports.placeOrder = async (req, res) => {
   }
 };
 
-// Verify Razorpay payment
+
 exports.verifyPayment = async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-  // Recreate the Razorpay signature to verify
+  
   const generatedSignature = crypto
     .createHmac('sha256', razorpay.key_secret)
     .update(razorpay_order_id + '|' + razorpay_payment_id)
@@ -128,7 +125,7 @@ exports.verifyPayment = async (req, res) => {
     return res.status(400).json({ message: 'Payment verification failed.' });
   }
 
-  // Retrieve the session-stored order details
+  
   const orderDetails = req.session.orderDetails;
   if (!orderDetails) {
     return res.status(400).json({ message: 'Order details not found in session.' });
@@ -140,7 +137,7 @@ exports.verifyPayment = async (req, res) => {
 
     if (!cart) return res.status(400).json({ message: 'No items in cart.' });
 
-    // Create the order in the database and mark it as 'Paid'
+    
     await createOrder(
       userId,
       cart,
@@ -154,8 +151,6 @@ exports.verifyPayment = async (req, res) => {
       orderDetails.paymentMethod,
       'Paid'
     );
-
-    // Reset the discount and clear session order details
     req.session.discount = 0;
     req.session.orderDetails = null;
 
@@ -166,7 +161,7 @@ exports.verifyPayment = async (req, res) => {
   }
 };
 
-// Render order confirmation page
+
 exports.orderConfirmation = (req, res) => {
   res.render('client/confirmation');
 };

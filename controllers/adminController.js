@@ -230,18 +230,14 @@ exports.getUserOrders = async (req, res) => {
   }
 };
 
-// Toggle block/unblock status for a user
 exports.toggleBlockUser = async (req, res) => {
   try {
       const user = await User.findById(req.params.id);
       if (!user) {
           return res.status(404).json({ message: "User not found" });
       }
-
-      // Toggle the isBlocked status
       user.isBlocked = !user.isBlocked;
       await user.save();
-
       const message = user.isBlocked ? 'User has been blocked.' : 'User has been unblocked.';
       res.json({ message });
   } catch (error) {
@@ -249,8 +245,7 @@ exports.toggleBlockUser = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
   }
 };
-
-// Display a specific order's details
+ 
 exports.getOrderDetails = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
@@ -302,7 +297,7 @@ exports.setNoCacheHeaders = (req, res, next) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   next();
 };
-// Get all coupons
+
 exports.getCoupons = async (req, res) => {
   try {
       const coupons = await Coupon.find();
@@ -313,7 +308,6 @@ exports.getCoupons = async (req, res) => {
   }
 };
  
-// Add a new coupon
 exports.addCoupon = async (req, res) => {
   const { code, discount, expirationDate, isActive } = req.body;
   try {
@@ -331,7 +325,6 @@ exports.addCoupon = async (req, res) => {
   }
 };
 
-// Edit a coupon
 exports.editCouponPage = async (req, res) => {
   const { id } = req.params;
   try {
@@ -363,8 +356,6 @@ exports.updateCoupon = async (req, res) => {
   }
 };
 
-
-// Delete a coupon
 exports.deleteCoupon = async (req, res) => {
   const { id } = req.params;
 
