@@ -14,7 +14,7 @@
             <h1>Edit Product</h1>
         </header>
         <section>
-            <form action="/admin/edit-product/<%= product._id %>" method="POST" enctype="multipart/form-data" onsubmit="return confirmUpdate(event)">
+            <form id="editProductForm" action="/admin/edit-product/<%= product._id %>" method="POST" enctype="multipart/form-data" >
                 <div class="form-group">
                     <label for="name">Product Name</label>
                     <input type="text" name="name" id="name" value="<%= product.name %>" required>
@@ -46,7 +46,7 @@
                         <img id="imagePreview" src="" alt="Image Preview" style="display:none; max-width: 200px; margin-top:10px;"/>
                     </div>
                 </div>
-                <button type="submit" class="btn-submit">Update Product</button>
+                <button type="submit" class="btn-submit" onclick="confirmUpdate(event)">Update Product</button>
             </form>
         </section>
     </div>

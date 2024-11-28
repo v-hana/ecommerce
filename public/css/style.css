@@ -36,7 +36,7 @@ a.more {
 }
 
 .custom-navbar {
-  background: #3b5d50 !important;
+  background: #786f45 !important;
   padding-top: 20px;
   padding-bottom: 20px; 
 }
@@ -104,7 +104,7 @@ a.more {
         margin-right: 20px; }
 
 .hero {
-  background: #3b5d50;
+  background: #cccd99;
   padding: calc(4rem - 30px) 0 0rem 0; }
   @media (min-width: 768px) {
     .hero {
@@ -120,13 +120,13 @@ a.more {
         max-width: 450px; } }
   .hero h1 {
     font-weight: 700;
-    color: #ffffff;
+    color: #786f45;
     margin-bottom: 30px; }
     @media (min-width: 1400px) {
       .hero h1 {
         font-size: 54px; } }
   .hero p {
-    color: rgba(255, 255, 255, 0.5);
+    color: #786f45;
     margin-bottom: 30px; }
   .hero .hero-img-wrap {
     position: relative; }
@@ -199,8 +199,8 @@ a.more {
     border-width: 2px;
     border-color: rgba(255, 255, 255, 0.3); }
     .btn.btn-white-outline:hover {
-      border-color: white;
-      color: #ffffff; }
+      border-color: #786f45;
+      color: #786f45; }
 
 .section-title {
   color: #2f2f2f; }
