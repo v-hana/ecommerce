@@ -97,6 +97,7 @@ exports.updateQuantity = async (req, res) => {
     }
 };
 
+
 exports.applyCoupon = async (req, res) => {
   const { couponCode } = req.body;
   const userId = req.session.userId;

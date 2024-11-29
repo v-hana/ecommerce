@@ -141,6 +141,7 @@ exports.getEditProduct = async (req, res, next) => {
   }
 };
 
+
 exports.postEditProduct = async (req, res, next) => {
   const { name, price, stock, description } = req.body;
   let updatedImage = req.file ? req.file.filename : null;
@@ -174,6 +175,7 @@ exports.postEditProduct = async (req, res, next) => {
     res.status(500).send('Server error');
   }
 };
+
 
 exports.postDeleteProduct = async (req, res, next) => {
   try {
