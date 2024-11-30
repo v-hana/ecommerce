@@ -36,6 +36,7 @@ router.get('/user/:id/orders',  isAuthenticated,adminController.setNoCacheHeader
 // View Order Details
 router.get('/orders/:id',  isAuthenticated,adminController.setNoCacheHeaders,adminController.getOrderDetails);
 
+
 // Update Order Status
 router.post('/order/:id/status',  isAuthenticated,adminController.updateOrderStatus);
 
