@@ -3,6 +3,7 @@ const { check } = require('express-validator');
 const router = express.Router();
 const authController = require('../controllers/authController');
 
+
 router.get('/signup', authController.getSignup);
 router.post('/signup', [
     check('username').notEmpty().withMessage('Username is required'),
