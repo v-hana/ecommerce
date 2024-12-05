@@ -8,3 +8,4 @@ router.patch('/update-quantity', cartController.updateQuantity);
 router.get('/',cartController.getCart);
 router.post('/apply-coupon', cartController.applyCoupon);
 module.exports = router;
+
